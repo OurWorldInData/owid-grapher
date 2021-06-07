@@ -589,7 +589,11 @@ export class Grapher
                     table.get(this.mapColumnSlug).tolerance
             )
 
-        if (this.isDiscreteBar || this.isLineChartThatTurnedIntoDiscreteBar)
+        if (
+            this.isDiscreteBar ||
+            this.isLineChartThatTurnedIntoDiscreteBar ||
+            this.isMarimekko
+        )
             return table.filterByTargetTimes(
                 [endTime],
                 table.get(this.yColumnSlugs[0]).tolerance
@@ -1113,14 +1117,15 @@ export class Grapher
             case GrapherTabOption.table:
                 return !this.hideTimeline
 
-            // StackedBar, StackedArea, and DiscreteBar charts never display a timeline
+            // StackedBar, StackedArea, and DiscreteBar, Marimekko charts never display a timeline
             case GrapherTabOption.chart:
                 return (
                     !this.hideTimeline &&
                     !(
                         this.isStackedBar ||
                         this.isStackedArea ||
-                        this.isDiscreteBar
+                        this.isDiscreteBar ||
+                        this.isMarimekko
                     )
                 )
 
