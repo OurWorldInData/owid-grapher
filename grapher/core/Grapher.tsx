@@ -1124,8 +1124,7 @@ export class Grapher
                     !(
                         this.isStackedBar ||
                         this.isStackedArea ||
-                        this.isDiscreteBar ||
-                        this.isMarimekko
+                        this.isDiscreteBar
                     )
                 )
 
