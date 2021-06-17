@@ -2339,7 +2339,8 @@ export class Grapher
             this.isStackedArea ||
             this.isStackedDiscreteBar ||
             this.isScatter ||
-            this.isLineChart
+            this.isLineChart ||
+            this.isMarimekko
         )
     }
 
