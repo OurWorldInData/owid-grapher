@@ -30,6 +30,7 @@ interface TickPlacement {
     isHidden: boolean
 }
 abstract class AbstractAxis {
+export abstract class AbstractAxis {
     config: AxisConfig
     @observable.ref domain: ValueRange
     @observable formatColumn?: CoreColumn // Pass the column purely for formatting reasons. Might be a better way to do this.
