@@ -29,9 +29,16 @@ interface TickPlacement {
     bounds: Bounds
     isHidden: boolean
 }
-abstract class AbstractAxis {
+
+enum Orientation {
+    vertical = "vertical",
+    horizontal = "horizontal",
+}
+
 export abstract class AbstractAxis {
     config: AxisConfig
+    abstract readonly orientation: Orientation
+
     @observable.ref domain: ValueRange
     @observable formatColumn?: CoreColumn // Pass the column purely for formatting reasons. Might be a better way to do this.
     @observable hideFractionalTicks = false
@@ -355,7 +362,8 @@ export abstract class AbstractAxis {
 const labelPadding = 5
 
 export class HorizontalAxis extends AbstractAxis {
-    // todo: test/refactor
+    orientation = Orientation.horizontal
+
     clone(): HorizontalAxis {
         return new HorizontalAxis(this.config)._update(this)
     }
@@ -431,6 +439,8 @@ export class HorizontalAxis extends AbstractAxis {
 }
 
 export class VerticalAxis extends AbstractAxis {
+    orientation = Orientation.vertical
+
     @computed get labelWidth(): number {
         return this.height
     }
