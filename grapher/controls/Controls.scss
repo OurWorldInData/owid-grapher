@@ -18,6 +18,14 @@ $zindex-ControlsFooter: 2;
     font-family: "Lato";
     font-size: 10px;
     font-weight: bold;
+    border: 1px solid rgb(175, 183, 193);
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.FacetStrategyDropdown div {
+    float: right;
 }
 
 @keyframes bounceIn {

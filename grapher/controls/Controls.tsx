@@ -14,6 +14,7 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload"
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons/faShareAlt"
 import { faExpand } from "@fortawesome/free-solid-svg-icons/faExpand"
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt"
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown"
 import {
     FacetAxisRange,
     FacetStrategy,
@@ -30,6 +31,7 @@ import {
     asArray,
     getStylesForTargetHeight,
 } from "../../clientUtils/react-select"
+import { Tippy } from "../chart/Tippy"
 
 export interface HighlightToggleManager {
     highlightToggle?: HighlightToggleConfig
@@ -249,7 +251,7 @@ const FACET_DROPDOWN_CLASS = "FacetStrategyDropdown"
 export class FacetStrategyDropdown extends React.Component<{
     manager: FacetStrategyDropdownManager
 }> {
-    @computed get options(): { label: string; value: string }[] {
+    @computed get options(): JSX.Element[] {
         const strategies = this.props.manager.availableFacetStrategies || [
             FacetStrategy.none,
             FacetStrategy.entity,
@@ -257,7 +259,7 @@ export class FacetStrategyDropdown extends React.Component<{
         ]
         return strategies.map((value) => {
             const label = facetStrategyLabels[value]
-            return { label, value }
+            return <div key="{value}">{label}</div>
         })
     }
 
@@ -272,18 +274,20 @@ export class FacetStrategyDropdown extends React.Component<{
     }
 
     render(): JSX.Element {
-        const styles = getStylesForTargetHeight(24)
         return (
-            <Select
-                className={FACET_DROPDOWN_CLASS}
-                classNamePrefix={FACET_DROPDOWN_CLASS}
-                defaultValue={this.options.find(
-                    (o) => o.value === FacetStrategy.none
-                )}
-                options={this.options}
-                onChange={this.onChange}
-                styles={styles}
-            />
+            <Tippy
+                content={this.options}
+                interactive={true}
+                trigger={"click"}
+                placement={"bottom"}
+            >
+                <div className={FACET_DROPDOWN_CLASS}>
+                    {facetStrategyLabels[this.facet]}
+                    <div>
+                        <FontAwesomeIcon icon={faChevronDown} />
+                    </div>
+                </div>
+            </Tippy>
         )
     }
 }
