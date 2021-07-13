@@ -260,7 +260,7 @@ export class FacetStrategyDropdown extends React.Component<{
         return strategies.map((value) => {
             const label = facetStrategyLabels[value]
             return (
-                <div key="{value}">
+                <div key={value.toString()}>
                     <a
                         onClick={(): void => {
                             this.props.manager.facet = value as FacetStrategy
