@@ -15,6 +15,33 @@ export enum SortOrder {
     desc = "desc",
 }
 
+export enum SortBy {
+    entityName = "entityName",
+    column = "column",
+    total = "total",
+}
+
+interface SortByTotalConfig {
+    sortBy: SortBy.total
+    sortOrder: SortOrder
+}
+
+interface SortByEntityNameConfig {
+    sortBy: SortBy.entityName
+    sortOrder: SortOrder
+}
+
+export interface SortByColumnConfig {
+    sortBy: SortBy.column
+    sortOrder: SortOrder
+    sortColumnSlug: string
+}
+
+export type SortConfig =
+    | SortByTotalConfig
+    | SortByEntityNameConfig
+    | SortByColumnConfig
+
 export type Year = Integer
 export type Color = string
 
