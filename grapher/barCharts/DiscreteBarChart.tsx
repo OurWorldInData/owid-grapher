@@ -93,7 +93,7 @@ export class DiscreteBarChart
     }
 
     @computed private get isLogScale(): boolean {
-        return this.yAxis.scaleType === ScaleType.log
+        return this.yAxisConfig.scaleType === ScaleType.log
     }
 
     @computed private get bounds(): Bounds {
@@ -189,13 +189,13 @@ export class DiscreteBarChart
         ]
     }
 
-    @computed private get yAxis(): AxisConfig {
+    @computed private get yAxisConfig(): AxisConfig {
         return this.manager.yAxis || new AxisConfig()
     }
 
-    @computed private get axis(): HorizontalAxis {
+    @computed get yAxis(): HorizontalAxis {
         // NB: We use the user's YAxis options here to make the XAxis
-        const axis = this.yAxis.toHorizontalAxis()
+        const axis = this.yAxisConfig.toHorizontalAxis()
         axis.updateDomainPreservingUserSettings(this.xDomainDefault)
 
         axis.formatColumn = this.yColumns[0] // todo: does this work for columns as series?
@@ -207,7 +207,7 @@ export class DiscreteBarChart
     @computed private get innerBounds(): Bounds {
         return this.bounds
             .padLeft(this.legendWidth + this.leftValueLabelWidth)
-            .padBottom(this.axis.height)
+            .padBottom(this.yAxis.height)
             .padRight(this.rightValueLabelWidth)
     }
 
@@ -229,13 +229,15 @@ export class DiscreteBarChart
     }
 
     @computed private get barPlacements(): { x: number; width: number }[] {
-        const { series, axis } = this
+        const { series, yAxis } = this
         return series.map((d) => {
             const isNegative = d.value < 0
-            const barX = isNegative ? axis.place(d.value) : axis.place(this.x0)
+            const barX = isNegative
+                ? yAxis.place(d.value)
+                : yAxis.place(this.x0)
             const barWidth = isNegative
-                ? axis.place(this.x0) - barX
-                : axis.place(d.value) - barX
+                ? yAxis.place(this.x0) - barX
+                : yAxis.place(d.value) - barX
 
             return { x: barX, width: barWidth }
         })
@@ -281,7 +283,7 @@ export class DiscreteBarChart
         const {
             series,
             bounds,
-            axis,
+            yAxis,
             innerBounds,
             barHeight,
             barSpacing,
@@ -301,22 +303,22 @@ export class DiscreteBarChart
                 />
                 <HorizontalAxisComponent
                     bounds={bounds}
-                    axis={axis}
+                    axis={yAxis}
                     axisPosition={innerBounds.bottom}
                 />
                 <HorizontalAxisGridLines
-                    horizontalAxis={axis}
+                    horizontalAxis={yAxis}
                     bounds={innerBounds}
                 />
                 {series.map((series) => {
                     // Todo: add a "placedSeries" getter to get the transformed series, then just loop over the placedSeries and render a bar for each
                     const isNegative = series.value < 0
                     const barX = isNegative
-                        ? axis.place(series.value)
-                        : axis.place(this.x0)
+                        ? yAxis.place(series.value)
+                        : yAxis.place(this.x0)
                     const barWidth = isNegative
-                        ? axis.place(this.x0) - barX
-                        : axis.place(series.value) - barX
+                        ? yAxis.place(this.x0) - barX
+                        : yAxis.place(series.value) - barX
                     const valueLabel = this.formatValue(series)
                     const labelX = isNegative
                         ? barX -
@@ -361,7 +363,7 @@ export class DiscreteBarChart
                                 x={0}
                                 y={0}
                                 transform={`translate(${
-                                    axis.place(series.value) +
+                                    yAxis.place(series.value) +
                                     (isNegative
                                         ? -labelToBarPadding
                                         : labelToBarPadding)
