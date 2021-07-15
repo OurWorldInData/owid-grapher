@@ -296,7 +296,7 @@ export class Grapher
     @observable relatedQuestions: RelatedQuestionsConfig[] = [] // todo: Persistables?
     @observable.ref annotation?: Annotation = undefined
 
-    @observable showFacets?: boolean = false
+    @observable showFacets?: boolean = true
     @observable lastFacet: FacetStrategy = FacetStrategy.none
 
     owidDataset?: LegacyVariablesAndEntityKey = undefined // This is temporarily used for testing. Will be removed
