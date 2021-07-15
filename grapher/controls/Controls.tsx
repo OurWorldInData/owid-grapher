@@ -6,7 +6,6 @@ import {
     getWindowQueryParams,
     QueryParams,
 } from "../../clientUtils/urls/UrlUtils"
-import Select, { ValueType } from "react-select"
 import { TimelineComponent } from "../timeline/TimelineComponent"
 import { formatValue } from "../../clientUtils/formatValue"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -27,10 +26,6 @@ import { ShareMenu, ShareMenuManager } from "./ShareMenu"
 import { TimelineController } from "../timeline/TimelineController"
 import { SelectionArray } from "../selection/SelectionArray"
 import { AxisConfig } from "../axis/AxisConfig"
-import {
-    asArray,
-    getStylesForTargetHeight,
-} from "../../clientUtils/react-select"
 import { Tippy } from "../chart/Tippy"
 
 export interface HighlightToggleManager {
@@ -242,7 +237,7 @@ export class FilterSmallCountriesToggle extends React.Component<{
 
 export interface FacetStrategyDropdownManager {
     availableFacetStrategies?: FacetStrategy[]
-    facet?: FacetStrategy
+    facetStrategy?: FacetStrategy
     showFacets?: boolean
 }
 
@@ -257,13 +252,13 @@ export class FacetStrategyDropdown extends React.Component<{
             FacetStrategy.entity,
             FacetStrategy.column,
         ]
-        return strategies.map((value) => {
+        return strategies.map((value: FacetStrategy) => {
             const label = facetStrategyLabels[value]
             return (
                 <div key={value.toString()}>
                     <a
                         onClick={(): void => {
-                            this.props.manager.facet = value as FacetStrategy
+                            this.props.manager.facetStrategy = value
                         }}
                     >
                         {label}
@@ -273,14 +268,8 @@ export class FacetStrategyDropdown extends React.Component<{
         })
     }
 
-    @computed get facet(): FacetStrategy {
-        return this.props.manager.facet || FacetStrategy.none
-    }
-
-    @action.bound onChange(
-        selected: ValueType<{ label: string; value: string }>
-    ): void {
-        this.props.manager.facet = asArray(selected)[0].value as FacetStrategy
+    @computed get facetStrategy(): FacetStrategy {
+        return this.props.manager.facetStrategy || FacetStrategy.none
     }
 
     render(): JSX.Element {
@@ -292,7 +281,7 @@ export class FacetStrategyDropdown extends React.Component<{
                 placement={"bottom"}
             >
                 <div className={FACET_DROPDOWN_CLASS}>
-                    {facetStrategyLabels[this.facet]}
+                    {facetStrategyLabels[this.facetStrategy]}
                     <div>
                         <FontAwesomeIcon icon={faChevronDown} />
                     </div>

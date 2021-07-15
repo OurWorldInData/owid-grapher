@@ -297,7 +297,9 @@ export class Grapher
     @observable.ref annotation?: Annotation = undefined
 
     @observable showFacets?: boolean = true
-    @observable lastFacet: FacetStrategy = FacetStrategy.none
+
+    // the desired faceting strategy, which might not be possible if we change the data
+    @observable selectedFacetStrategy: FacetStrategy = FacetStrategy.none
 
     owidDataset?: LegacyVariablesAndEntityKey = undefined // This is temporarily used for testing. Will be removed
     manuallyProvideData? = false // This will be removed.
@@ -1162,7 +1164,7 @@ export class Grapher
             .map((dim) => dim.column)
     }
 
-    @computed get yColumnSlugsInSelectionOrder() {
+    @computed get yColumnSlugsInSelectionOrder(): string[] {
         return this.selectedColumnSlugs?.length
             ? this.selectedColumnSlugs
             : this.yColumnSlugs
@@ -1455,7 +1457,7 @@ export class Grapher
                 this.yScaleType !== ScaleType.log
             )
 
-        if (this.facet === FacetStrategy.column) return false
+        if (this.facetStrategy === FacetStrategy.column) return false
 
         return !this.hideRelativeToggle
     }
@@ -1802,7 +1804,10 @@ export class Grapher
     }
 
     @action.bound private toggleFacetStrategy(): void {
-        this.facet = next(this.availableFacetStrategies, this.facet)
+        this.facetStrategy = next(
+            this.availableFacetStrategies,
+            this.facetStrategy
+        )
     }
 
     @action.bound private toggleFacetVisibility(): void {
@@ -1811,19 +1816,11 @@ export class Grapher
 
     @computed get showFacetYRangeToggle(): boolean {
         // don't offer to make the y range relative if the range is discrete
-        return this.facet !== FacetStrategy.none && !this.isStackedDiscreteBar
+        return (
+            this.facetStrategy !== FacetStrategy.none &&
+            !this.isStackedDiscreteBar
+        )
     }
-
-    @computed get facet(): FacetStrategy {
-        if (this.showFacets) {
-            return this.lastFacet
-        }
-        return FacetStrategy.none
-    }
-    set facet(strategy: FacetStrategy) {
-        this.lastFacet = strategy
-    }
-
     @computed private get hasMultipleYColumns(): boolean {
         return this.yColumnSlugs.length > 1
     }
@@ -1864,9 +1861,16 @@ export class Grapher
     }
 
     private disableAutoFaceting = true // turned off for now
+
+    // the actual facet setting used by a chart, potentially overriding selectedFacetStrategy
     @computed get facetStrategy(): FacetStrategy {
-        if (this.facet && this.availableFacetStrategies.includes(this.facet))
-            return this.facet
+        if (!this.showFacets) return FacetStrategy.none
+
+        if (
+            this.selectedFacetStrategy &&
+            this.availableFacetStrategies.includes(this.selectedFacetStrategy)
+        )
+            return this.selectedFacetStrategy
 
         if (this.disableAutoFaceting) return FacetStrategy.none
 
@@ -1886,6 +1890,10 @@ export class Grapher
             return FacetStrategy.column
 
         return FacetStrategy.none
+    }
+
+    set facetStrategy(facet: FacetStrategy) {
+        this.selectedFacetStrategy = facet
     }
 
     @action.bound randomSelection(num: number): void {
@@ -2136,7 +2144,7 @@ export class Grapher
         this.colorSlug = grapher.colorSlug
         this.sizeSlug = grapher.sizeSlug
         this.hasMapTab = grapher.hasMapTab
-        this.facet = FacetStrategy.none
+        this.selectedFacetStrategy = FacetStrategy.none
         this.hasChartTab = grapher.hasChartTab
         this.map = grapher.map
         this.yAxis.scaleType = grapher.yAxis.scaleType
